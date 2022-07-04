@@ -1,0 +1,59 @@
+extends layout 
+include mixins/_post
+block content
+    if profileOwner != undefined
+        .profile-header
+            img(src=`https://res.cloudinary.com/dmftho0cx/image/upload/${profileOwner.profile_picture}`)
+            if profileOwner.displayName == ""
+                h1=profileOwner.first_name 
+            else 
+                h1=profileOwner.displayName
+            h2=profileOwner.username 
+                if profileOwner.isVerified 
+                    span &nbsp;
+                    i.fas.fa-check 
+            if profileOwner.isAdmin
+                small Verified admin
+            p=profileOwner.description
+            if profileOwner.followers == 1
+                b=`${profileOwner.followers} Follower  | `
+            else
+                b=`${profileOwner.followers} Followers  | `
+            b=`${profileOwner.following.length} Following`
+            if user.username == profileOwner.username
+                br
+                br
+                a.btn.btn-outline-primary(href="/profile/edit") Edit profile
+            else if !user.following.includes(profileOwner.username)
+                br
+                br
+                form(action="", method="POST")
+                    button.btn.btn-primary(type="submit" style="font-size: 1.5rem") Follow
+            else 
+                br
+                br
+                form(action="", method="POST")
+                    button.btn.btn-light(type="submit") Unfollow
+        .profile-posts
+            each post in posts    
+                .post-wrapper-wrapper
+                    +post(post)
+        -var pageB = parseInt(page) - 1;
+        -var pageA = parseInt(page) + 1;
+        .text-center
+            if url.startsWith('/user')
+                if page != 1 && page != 2
+                    a.nextLastPage.btn.btn-primary(href=`/user/${profileOwner.username}/${pageB}`) Last page
+                if page == 2
+                    a.nextLastPage.btn.btn-primary(href=`/user/${profileOwner.username}`) Last page 
+                if nextPage 
+                    a.nextLastPage.btn.btn-primary(href=`/user/${profileOwner.username}/${pageA}`) Next page 
+            if url.startsWith('/profile')
+                if page != 1 && page != 2
+                    a.nextLastPage.btn.btn-primary(href=`/profile/${pageB}`) Last page 
+                if page == 2
+                    a.nextLastPage.btn.btn-primary(href="/profile") Last page 
+                if nextPage 
+                    a.nextLastPage.btn.btn-primary(href=`/profile/${pageA}`) Next page
+    else 
+        h1 No one owns this user handle

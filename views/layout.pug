@@ -1,0 +1,57 @@
+doctype html
+html
+  head
+    title= title
+    link(rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous")
+    script(src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous")
+    script(src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF" crossorigin="anonymous")
+    link(rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous")
+    link(rel='stylesheet', href='/stylesheets/style.css')
+    link(rel="shortcut icon", href="/images/logo.png", type="image/x-icon")
+    script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js")
+  body.bg-dark.text-light
+    header 
+      nav
+        a(href="/").logo 
+          img.logoImg(src="/images/logo.png", alt="The Chatterbox")
+        a(href="/") 
+          i(class="fas fa-home") &nbsp;
+          span.navName Home 
+        a(href="/search") 
+          i(class="fas fa-search") &nbsp;
+          span.navName Search
+        a(href="/explore") 
+          i.fas.fa-compass &nbsp;
+          span.navName Explore
+        a(href="/post" type="button" data-toggle="modal" data-target="#postModal")
+          i(class="fas fa-plus-circle") &nbsp;
+          span.navName Post
+        a(href="/profile")
+          i(class="fas fa-user") &nbsp;
+          span.navName Profile 
+        a(href="/settings") 
+          i.fas.fa-cog &nbsp;
+          span.navName Setting
+        a(href="/logout")
+          i(class="fas fa-arrow-alt-circle-left") &nbsp;
+          span.navName Logout
+    block content
+    unless url.startsWith("/signup") || url.startsWith('/login') || url.startsWith('/about') || url.startsWith('/help') || url.startsWith('/admin') || url.startsWith('/terms-and-conditions')
+      footer  
+        button#newTweet.btn.btn-primary.fas.fa-plus-circle(type="button" data-toggle="modal" data-target="#postModal")
+          span.sr-only New tweet
+      .modal.fade#postModal
+        .modal-dialog
+          .modal-content.bg-dark.text-light
+            .modal-header 
+              h3 New post 
+              button.close(type="button" data-dismiss="modal" style="color: white") &times;
+            form(action="/post" method="POST")
+              input(type="hidden", name="user" value=user.username)
+              input(type="hidden", name="userPFP" value=user.profile_picture)
+              .modal-body 
+                .form-group 
+                  label(for="message") Talk about something: 
+                  textarea#message.form-control(name="message", cols="3" rows="4" required placeholder="What's going on?" maxlength="300")
+              .modal-footer 
+                button.btn.btn-primary(type="submit") Create box

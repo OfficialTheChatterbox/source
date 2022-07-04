@@ -1,0 +1,26 @@
+extends layout 
+block content 
+    h1=title 
+    form(action="" method="post")
+        if url.startsWith('/settings/email')
+            .form-group 
+                label(for="email") New email 
+                input.form-control#email(type="email" name="email" value=user.email) 
+        if url.startsWith('/settings/name')
+            .form-group 
+                label(for="first_name") First name 
+                input.form-control#first_name(type="text", name="first_name" value=user.first_name) 
+            .form-group 
+                label(for="surname") Surname 
+                input.form-control#surname(type="text", name="surname" value=user.surname) 
+        if url.startsWith('/settings/password')
+            .form-group 
+                label(for="password") New password
+                input.form-control#password(type="password" name="password") 
+            .form-group 
+                label(for="confirm_password") Confirm new password
+                input.form-control#confirm_password(type="password" name="confirm_password") 
+            .form-group 
+                label(for="oldPassword") Old password 
+                input.form-control#oldPassword(type="password" name="oldPassword") 
+        button.btn.btn-success(type="submit") Submit 

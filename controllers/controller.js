@@ -44,7 +44,7 @@ exports.indexPage = (req, res) => {
     res.redirect('/home');
 }
 exports.isLoggedIn = (req, res, next) => {
-    if(req.isAuthenticated() || req.url.startsWith('/login') || req.url.startsWith("/signup") || req.url.startsWith("/about") || req.url.startsWith('/terms-and-conditions')) return next();
+    if(req.isAuthenticated() || req.url.startsWith('/login') || req.url.startsWith("/signup") || req.url.startsWith("/about") || req.url.startsWith('/terms-of-service')) return next();
     res.redirect('/login')
 }
 exports.isAdmin = (req, res, next) => {
@@ -188,6 +188,21 @@ exports.editProfilePost = async (req, res, next) => {
     try {
         const username = req.user.username;
         const user = await User.findOneAndUpdate({username: username}, req.body, {new:true});
+        if (req.body.profile_picture) {
+            const unPosts = Post.find({user: username});
+            const unComments = Comment.find({user: username});
+            const [posts, comments] = await Promise.all([unPosts, unComments]);
+            posts.forEach(async curr => {
+                await Post.findOneAndUpdate({user: username}, {
+                    userPFP: req.body.profile_picture
+                }, {new: true}); 
+            });
+            comments.forEach(async curr => {
+                await Comment.findOneAndUpdate({user: username}, {
+                    userPFP: req.body.profile_picture
+                }, {new: true});
+            });
+        }
         res.redirect('/profile');
     } catch(error) {
         next(error);
@@ -292,15 +307,12 @@ exports.addPost = async (req, res, next) => {
 }
 exports.deletePost = async (req, res, next) => {
     try {
-        // MAKE SURE ONLY THE CREATOR OF THE POST CAN DELETE
-        if (req.body.currentUser == req.user.username && req.user.username == req.params.username && req.params.username == req.body.postOwner) {
-            const unPost = await Post.findByIdAndRemove({_id: req.params.postID});
-            const unComments = Comment.find({mainBox: req.params.postID});
-            const [post, comments] = await Promise.all([unPost, unComments]);
-            comments.forEach(async (item) => {
-                await Comment.findByIdAndRemove({_id: item._id});
-            })
-        }
+        const unPost = await Post.findByIdAndRemove({_id: req.params.postID});
+        const unComments = Comment.find({mainBox: req.params.postID});
+        const [post, comments] = await Promise.all([unPost, unComments]);
+        comments.forEach(async (item) => {
+            await Comment.findByIdAndRemove({_id: item._id});
+        })
         res.redirect('/profile');
     } catch(error) {
         next(error);
@@ -389,8 +401,6 @@ exports.postComment = async (req, res, next) => {
 }
 exports.deleteComment = async (req, res, next) => {
     try {
-        // MAKE SURE ONLY THE CREATOR OF THE POST CAN DELETE
-        if (req.body.currentUser == req.user.username && req.user.username == req.body.postOwner) {
             const post1 = await Post.findOne({_id: req.params.postId});
             const post = Post.findByIdAndUpdate(req.params.postId, {
                 comments: parseInt(post1.comments) - 1
@@ -398,7 +408,6 @@ exports.deleteComment = async (req, res, next) => {
             const comment = Comment.findByIdAndRemove(req.body.postId);
             Promise.all([post, comment]);
             res.redirect(`/user/${req.params.username}/post/${req.params.postId}`);
-        }
     } catch(error) {
         next(error);
     }

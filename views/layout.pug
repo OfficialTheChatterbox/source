@@ -35,6 +35,8 @@ html
         a(href="/logout")
           i(class="fas fa-arrow-alt-circle-left") &nbsp;
           span.navName Logout
+        if user 
+          img.help-pfp(src=`https://res.cloudinary.com/dmftho0cx/image/upload/${user.profile_picture}`)
     block content
     unless url.startsWith("/signup") || url.startsWith('/login') || url.startsWith('/about') || url.startsWith('/help') || url.startsWith('/admin') || url.startsWith('/terms-and-conditions')
       footer  

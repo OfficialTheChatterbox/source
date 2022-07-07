@@ -1,5 +1,5 @@
 mixin post(post, postOwner={})
-    unless url.startsWith(`/user/${postOwner.user}/post`)
+    unless url.startsWith('/user/') && url.includes('/post')
         a(href=`/user/${post.user}/post/${post._id}`) 
             .post-wrapper
                 img.post-pfp(src=`https://res.cloudinary.com/dmftho0cx/image/upload/${post.userPFP}`)
